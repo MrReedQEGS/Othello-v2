@@ -16,14 +16,14 @@
 ##############################################################################
 import pygame, random, time
 from pygame.locals import *
- 
+
 ##############################################################################
 # VARIABLES
 ##############################################################################
 DEBUG_ON = False
 
 SCREEN_WIDTH = 560
-SCREEN_HEIGHT = 460
+SCREEN_HEIGHT = 500
 
 # create the display surface object
 # of specific dimension.
@@ -71,7 +71,8 @@ turn = COL_BLACK
 turnIndicatorYPos = 24
 
 alwaysShowNextMoves = True
-nextMoveColour = (200,200,200)
+
+nextMoveColour = (50,50,50)
 
 #Make a blank game grid
 gameGrid = [[0,0,0,0,0,0,0,0],
@@ -82,6 +83,54 @@ gameGrid = [[0,0,0,0,0,0,0,0],
             [0,0,0,0,0,0,0,0],
             [0,0,0,0,0,0,0,0],
             [0,0,0,0,0,0,0,0]]
+
+#Start a one second timer
+#Keeping track of game time in a separate thread
+from threading import Timer,Thread,Event
+class perpetualTimer():
+
+   def __init__(self,t,hFunction):
+      self.t=t
+      self.hFunction = hFunction
+      self.thread = Timer(self.t,self.handle_function)
+
+   def handle_function(self):
+      self.hFunction()
+      self.thread = Timer(self.t,self.handle_function)
+      self.thread.start()
+
+   def start(self):
+      self.thread.start()
+
+   def cancel(self):
+      self.thread.cancel()
+
+def OneSecondCallback():
+    #Update game time
+    global gameTime
+    gameTime = gameTime + 1
+
+def ZeroPointOneSecondCallback():
+    global nextMoveColour
+
+    if(nextMoveColour[0] < 160):
+        nextMoveColour = (nextMoveColour[0]+5,nextMoveColour[1]+5,nextMoveColour[2]+5)
+    else:  
+        nextMoveColour = (50,50,50)  
+    
+gameTime = 0
+gameTimeSurface = my_font.render("Time elapsed : {}".format(gameTime), False, (0, 0, 0))
+DELAY_1 = 1
+myOneSecondTimer = None
+if(myOneSecondTimer == None):
+    myOneSecondTimer = perpetualTimer(DELAY_1,OneSecondCallback)
+    myOneSecondTimer.start()
+
+DELAY_01 = 0.05
+myZeroPointOneTimer = None
+if(myZeroPointOneTimer == None):
+    myZeroPointOneTimer = perpetualTimer(DELAY_01,ZeroPointOneSecondCallback)
+    myZeroPointOneTimer.start()
 
 ##############################################################################
 # SUB PROGRAMS
@@ -135,6 +184,7 @@ def LoadImages(running):
     except:
         print("When loading \"{}\". No image found!!!".format(backImageName))
         print("Quitting PyGame  :(")
+
         running = False
         return running
 
@@ -633,6 +683,17 @@ while running:
         if(gameOver):
             surface.blit(gameOverImage, (470, 180))
         
+        gameTimeSurface = my_font.render("Time elapsed : {}".format(gameTime), False, (0, 0, 0))
+        surface.blit(gameTimeSurface, (30,460))
+
         pygame.display.flip()
+
+if(myOneSecondTimer!=None):
+    myOneSecondTimer.cancel()
+    myOneSecondTimer = None
+
+if(myZeroPointOneTimer!=None):
+    myZeroPointOneTimer.cancel()
+    myZeroPointOneTimer = None
 
 pygame.quit()
