@@ -42,6 +42,8 @@ PIECE_SIZE = 20
 
 running = True
 
+turn = COL_WHITE
+
 #Testing some code from a different py file...
 p1 = Person("Fred")
 p1.SayHello()
@@ -59,6 +61,13 @@ gameGrid = [[0,0,0,0,0,0,0,0],
 ##############################################################################
 # SUB PROGRAMS
 ##############################################################################
+def SwapTurn():
+    global turn
+    if(turn == COL_WHITE):
+        turn = COL_BLACK
+    else:
+        turn = COL_WHITE
+
 def WhatSquareAreWeIn(aPosition):
     #Find out what square somebody clicked on.
     #For example, if we click top left the the answer is row 1 col 1  (aka  "a1")
@@ -66,19 +75,19 @@ def WhatSquareAreWeIn(aPosition):
     currentClickY = aPosition[1]
    
     adjustedX = currentClickX-TOP_LEFT[0]
-    col = adjustedX//(GRID_SIZE_X+1)  + 1 #The +1 in the brackets seems to fix the identifcation of col 6 to 7 which was a bit out?
+    col = adjustedX//(GRID_SIZE_X+1) #The +1 in the brackets seems to fix the identifcation of col 6 to 7 which was a bit out?
    
 
     adjustedY = currentClickY-TOP_LEFT[1]
-    row = adjustedY//(GRID_SIZE_Y) + 1
+    row = adjustedY//(GRID_SIZE_Y)
    
     if DEBUG_ON:
         print("Current x = {}\nCurrrent y = {}".format(currentClickX,currentClickY))
-        print("Col  =  {}".format(col))
-        print("row  =  {}".format(row))
+        print("Col  =  {}".format(col+1))
+        print("row  =  {}".format(row+1))
 
         letters = ["a","b","c","d","e","f","g","h"]
-        print("{}{}".format(letters[col-1],row))
+        print("{}{}".format(letters[col],row))
 
 
     return row,col
@@ -101,6 +110,14 @@ def DrawTheCurrentGameGrid():
             #pygame.draw.rect(surface, colours[col], pygame.Rect(A1_location[0] + col*GRID_SIZE_X, A1_location[1] + row*GRID_SIZE_Y, 10, 10))
             pygame.draw.circle(surface, pieceCol, (A1_location[0] + col*GRID_SIZE_X, A1_location[1] + row*GRID_SIZE_Y), PIECE_SIZE)
 
+def AddPieceToGrid(row,col):
+
+    whatToAdd = 1
+
+    if(turn == COL_BLACK):
+        whatToAdd = 2
+
+    gameGrid[row][col] = whatToAdd
 
 def HandleInput(running):
 
@@ -128,6 +145,9 @@ def HandleInput(running):
                 print("NOT ON THE BOARD")
             else:
                 row,col = WhatSquareAreWeIn(somePos)
+
+                AddPieceToGrid(row,col)
+                SwapTurn()
 
     return running
 
