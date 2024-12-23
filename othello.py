@@ -1,15 +1,19 @@
-#Attempt 1 at an othello game
-#Mr Reed - Dec 2024
+##############################################################################
+# DETAILS
+#  Attempt 1 at an othello game
+#  Mr Reed - Dec 2024
+##############################################################################
 
+##############################################################################
+# IMPORTS
+##############################################################################
 from othelloClasses import Person
-
 import pygame, random, time
 from pygame.locals import *
  
-# initiate pygame and give permission
-# to use pygame's functionality.
-pygame.init()
-
+##############################################################################
+# VARIABLES
+##############################################################################
 DEBUG_ON = True
 
 SCREEN_WIDTH = 500
@@ -43,16 +47,18 @@ p1 = Person("Fred")
 p1.SayHello()
 
 #Make a blank game grid
-gameGrid = [[0,1,0,0,0,0,0,0],
-            [0,0,0,0,0,1,1,0],
-            [2,0,0,0,0,0,2,0],
+gameGrid = [[0,0,0,0,0,0,0,0],
             [0,0,0,0,0,0,0,0],
-            [0,0,0,1,1,0,0,0],
-            [0,0,0,2,2,2,1,0],
+            [0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0],
             [0,0,0,0,0,0,0,0],
             [0,0,0,0,0,0,0,0]]
 
-#SUB PROGRAMS
+##############################################################################
+# SUB PROGRAMS
+##############################################################################
 def WhatSquareAreWeIn(aPosition):
     #Find out what square somebody clicked on.
     #For example, if we click top left the the answer is row 1 col 1  (aka  "a1")
@@ -60,16 +66,20 @@ def WhatSquareAreWeIn(aPosition):
     currentClickY = aPosition[1]
    
     adjustedX = currentClickX-TOP_LEFT[0]
-    col = adjustedX//(GRID_SIZE_X+1)  #The little +1 seems to fix the identifcation of col 6 to 7 which was a bit out?
+    col = adjustedX//(GRID_SIZE_X+1)  + 1 #The +1 in the brackets seems to fix the identifcation of col 6 to 7 which was a bit out?
    
 
     adjustedY = currentClickY-TOP_LEFT[1]
-    row = adjustedY//(GRID_SIZE_Y)
+    row = adjustedY//(GRID_SIZE_Y) + 1
    
     if DEBUG_ON:
         print("Current x = {}\nCurrrent y = {}".format(currentClickX,currentClickY))
         print("Col  =  {}".format(col))
         print("row  =  {}".format(row))
+
+        letters = ["a","b","c","d","e","f","g","h"]
+        print("{}{}".format(letters[col-1],row))
+
 
     return row,col
 
@@ -121,9 +131,12 @@ def HandleInput(running):
 
     return running
 
-#MAIN
+##############################################################################
+# MAIN
+##############################################################################
+pygame.init()
 
-#Load the background grid
+#Load the background image
 try:
     backImage = pygame.image.load(backImageName).convert()
 except:
@@ -131,10 +144,7 @@ except:
     print("Quitting PyGame  :(")
     running = False
 
-#Make some random colours for the square centre markers
-
-
-
+#game loop
 while running:
 
     # Fill the scree with white color - "blank it"
@@ -147,7 +157,6 @@ while running:
    
     if(running):
         DrawTheCurrentGameGrid()
-            
         pygame.display.flip()
 
 pygame.quit()
