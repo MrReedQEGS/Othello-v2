@@ -2,6 +2,10 @@
 # DETAILS
 #  Attempt 1 at an othello game
 #  Mr Reed - Dec 2024
+#
+#  Sounds 
+#  https://pixabay.com/sound-effects/search/clicks/
+#
 ##############################################################################
 
 ##############################################################################
@@ -17,20 +21,23 @@ from pygame.locals import *
 DEBUG_ON = True
 
 SCREEN_WIDTH = 560
-SCREEN_HEIGHT = 500
+SCREEN_HEIGHT = 460
 
 # create the display surface object
 # of specific dimension.
 surface = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
-
+pygame.display.set_caption('Othello - Mark Reed (c) 2024')
 
 COL_BLACK = (0,0,0)
 COL_WHITE = (255,255,255)
 COL_GREY = (150,150,150)
 COL_RED = (255,0,0)
+COL_BLUE = (0,0,255)
+COL_DARK_BLUE = (35, 5, 250)
 BACK_FILL_COLOUR = COL_WHITE
 backImageName = "./images/othello blank grid.jpg"
 turnIndicatorImageName = "./images/turnIndicator.jpg"
+scoreImageName = "./images/score.jpg"
 
 TOP_LEFT = (35,22)
 TOP_RIGHT = (452,22)
@@ -40,6 +47,10 @@ GRID_SIZE_X = 52
 GRID_SIZE_Y = 52
 A1_location = (62,50)  #Used to draw pieces in the correct place!
 PIECE_SIZE = 20
+
+#sounds
+pygame.mixer.init()
+clickSound = pygame.mixer.Sound("./sounds/click.mp3")
 
 running = True
 
@@ -64,9 +75,10 @@ gameGrid = [[0,0,0,0,0,0,0,0],
 # SUB PROGRAMS
 ##############################################################################
 def LoadImages(running):
-    global backImage,turnIndicatorImage
+    global backImage,turnIndicatorImage,scoreImage
     try:
         backImage = pygame.image.load(backImageName).convert()
+        print("\"{}\". Loaded successfully.".format(backImageName))
     except:
         print("When loading \"{}\". No image found!!!".format(backImageName))
         print("Quitting PyGame  :(")
@@ -75,11 +87,22 @@ def LoadImages(running):
 
     try:
         turnIndicatorImage = pygame.image.load(turnIndicatorImageName).convert()
+        print("\"{}\". Loaded successfully.".format(turnIndicatorImageName))
     except:
         print("When loading \"{}\". No image found!!!".format(turnIndicatorImageName))
         print("Quitting PyGame  :(")
         running = False
         return running
+
+    try:
+        scoreImage = pygame.image.load(scoreImageName).convert()
+        print("\"{}\". Loaded successfully.".format(scoreImageName))
+    except:
+        print("When loading \"{}\". No image found!!!".format(scoreImageName))
+        print("Quitting PyGame  :(")
+        running = False
+        return running
+        
 
 def SwapTurn():
     global turn,turnIndicatorYPos
@@ -115,7 +138,7 @@ def WhatSquareAreWeIn(aPosition):
     return row,col
 
 def DrawTurnMarker():
-    pygame.draw.rect(surface, COL_RED, pygame.Rect(487,turnIndicatorYPos, 28, 27),2)
+    pygame.draw.rect(surface, COL_DARK_BLUE, pygame.Rect(487,turnIndicatorYPos, 28, 27),2)
             
 def DrawTheCurrentGameGrid():
 
@@ -133,7 +156,7 @@ def DrawTheCurrentGameGrid():
                 pieceCol = COL_BLACK
             
             pygame.draw.circle(surface, pieceCol, (A1_location[0] + col*GRID_SIZE_X, A1_location[1] + row*GRID_SIZE_Y), PIECE_SIZE)
-
+            
 def AddPieceToGrid(row,col):
 
     whatToAdd = 1
@@ -144,6 +167,8 @@ def AddPieceToGrid(row,col):
     #Only allow the move if the square is not full already...
     if(gameGrid[row][col] == 0):
         gameGrid[row][col] = whatToAdd
+        pygame.mixer.Sound.play(clickSound)
+        pygame.mixer.music.stop()
         SwapTurn()
     else:
         print("Square taken already!!!  Pick again...")
@@ -195,6 +220,8 @@ while running:
     surface.blit(backImage, (0, 0))
 
     surface.blit(turnIndicatorImage, (460, 0))
+
+    surface.blit(scoreImage, (475, 364))
 
     DrawTurnMarker()
 
