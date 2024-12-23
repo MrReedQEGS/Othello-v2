@@ -8,16 +8,9 @@
 #
 ##############################################################################
 
-#TO DO
-# check for game over
-#   1 - put all blank spaces row,col into a list
-#   2 - Run through each blank space to see if runs are allowed...ie a legal move exists if there is run allowed from somewhere
-#   3 - If any are then not game over!
-
 ##############################################################################
 # IMPORTS
 ##############################################################################
-from othelloClasses import Person
 import pygame, random, time
 from pygame.locals import *
  
@@ -44,6 +37,7 @@ BACK_FILL_COLOUR = COL_WHITE
 backImageName = "./images/othello blank grid.jpg"
 turnIndicatorImageName = "./images/turnIndicator.jpg"
 scoreImageName = "./images/score.jpg"
+gameOverImageName = "./images/gameOver.jpg"
 
 TOP_LEFT = (35,22)
 TOP_RIGHT = (452,22)
@@ -75,10 +69,6 @@ turnIndicatorYPos = 24
 
 alwaysShowNextMoves = True
 nextMoveColour = (200,200,200)
-
-#Testing some code from a different py file...
-p1 = Person("Fred")
-p1.SayHello()
 
 #Make a blank game grid
 gameGrid = [[0,0,0,0,0,0,0,0],
@@ -134,10 +124,11 @@ def UpdateScores():
     p2ScoreSurface = my_font.render(str(p2Score), False, (0, 0, 0))
 
 def LoadImages(running):
-    global backImage,turnIndicatorImage,scoreImage
+    global backImage,turnIndicatorImage,scoreImage,gameOverImage
     try:
         backImage = pygame.image.load(backImageName).convert()
-        print("\"{}\". Loaded successfully.".format(backImageName))
+        if(DEBUG_ON):
+            print("\"{}\". Loaded successfully.".format(backImageName))
     except:
         print("When loading \"{}\". No image found!!!".format(backImageName))
         print("Quitting PyGame  :(")
@@ -146,7 +137,8 @@ def LoadImages(running):
 
     try:
         turnIndicatorImage = pygame.image.load(turnIndicatorImageName).convert()
-        print("\"{}\". Loaded successfully.".format(turnIndicatorImageName))
+        if(DEBUG_ON):
+            print("\"{}\". Loaded successfully.".format(turnIndicatorImageName))
     except:
         print("When loading \"{}\". No image found!!!".format(turnIndicatorImageName))
         print("Quitting PyGame  :(")
@@ -155,9 +147,20 @@ def LoadImages(running):
 
     try:
         scoreImage = pygame.image.load(scoreImageName).convert()
-        print("\"{}\". Loaded successfully.".format(scoreImageName))
+        if(DEBUG_ON):
+            print("\"{}\". Loaded successfully.".format(scoreImageName))
     except:
         print("When loading \"{}\". No image found!!!".format(scoreImageName))
+        print("Quitting PyGame  :(")
+        running = False
+        return running
+
+    try:
+        gameOverImage = pygame.image.load(gameOverImageName).convert()
+        if(DEBUG_ON):
+            print("\"{}\". Loaded successfully.".format(gameOverImageName))
+    except:
+        print("When loading \"{}\". No image found!!!".format(gameOverImageName))
         print("Quitting PyGame  :(")
         running = False
         return running
@@ -427,7 +430,10 @@ def HandleInput(running,gameOver):
                 currentClickX > TOP_RIGHT[0] or
                 currentClickY < TOP_LEFT[1] or
                 currentClickY > BOT_RIGHT[1]):
-                    print("NOT ON THE BOARD")
+                    if(DEBUG_ON):
+                        print("NOT ON THE BOARD")
+                    else:
+                        pass
                 else:
                     col,row = WhatSquareAreWeIn(somePos)
                     AddPieceToGrid(col,row)
@@ -445,7 +451,6 @@ gameOver = False
 
 #game loop
 while running:
-
     # Fill the scree with white color - "blank it"
     surface.fill(BACK_FILL_COLOUR)
 
@@ -469,6 +474,10 @@ while running:
    
     if(running):
         DrawTheCurrentGameGrid()
+
+        if(gameOver):
+            surface.blit(gameOverImage, (92, 144))
+        
         pygame.display.flip()
 
 pygame.quit()
