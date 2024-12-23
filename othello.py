@@ -333,6 +333,43 @@ def CheckHorizontalLeft(currentPiece,oppositePiece,row,col,applyTheMove=True):
 
     return runFound
 
+def CheckDiagonalDownRight(currentPiece,oppositePiece,row,col,applyTheMove = True):
+    runFound = True
+    #look for diagonal run DOWN RIGHT
+    numInRun = 0
+    rowNeedTo7 = 7 - row
+    colNeededTo7 = 7 - col
+    numOfLoops = min(rowNeedTo7,colNeededTo7)
+
+    for i in range(1,numOfLoops):
+
+        #print("checking",rowNeedTo7,colNeededTo7,numOfLoops,row+i,col+i)
+
+        if(gameGrid[row + i][col + i] == 0):
+            numInRun = 0  # if we get to a blank square then it cannot be run
+            break
+        if(gameGrid[row + i][col + i] == oppositePiece):
+            numInRun = numInRun + 1
+        if(gameGrid[row + i][col + i] == currentPiece):
+            break # end of possible run
+    else:
+        numInRun = 0 # if we did not break then it isn't a run!
+
+    if(numInRun == 0):
+        runFound = False
+    else:
+        #Flip the run all over
+        if(applyTheMove):
+            for i in range(row+1,row+1+numInRun):
+                for j in range(col+1,col+1+numInRun):
+                    gameGrid[i][j] = currentPiece
+        
+        if(DEBUG_ON):
+            print("diagonal right down move allowed? " + str(runFound))
+            print("Run found : {} ".format(numInRun))
+
+    return runFound
+
 def MoveAllowed(somecol, somerow, applyTheMove):
     #Not all moves are valid!!
     #1 - Cannot move outside the grid
@@ -367,7 +404,11 @@ def MoveAllowed(somecol, somerow, applyTheMove):
         runFound = CheckVerticalUp(currentPiece, oppositePiece, somerow, somecol, applyTheMove)
         if(runFound):
             atLeastOneRunWasFound = True
-            
+
+        runFound = CheckDiagonalDownRight(currentPiece, oppositePiece, somerow, somecol, applyTheMove)
+        if(runFound):
+            atLeastOneRunWasFound = True
+
     return atLeastOneRunWasFound
 
 def ShowNextMoves(gameOver):
