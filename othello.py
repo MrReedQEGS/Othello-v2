@@ -8,6 +8,12 @@
 #
 ##############################################################################
 
+#TO DO
+# check for game over
+#   1 - put all blank spaces row,col into a list
+#   2 - Run through each blank space to see if runs are allowed...ie a legal move exists if there is run allowed from somewhere
+#   3 - If any are then not game over!
+
 ##############################################################################
 # IMPORTS
 ##############################################################################
@@ -75,8 +81,8 @@ p1.SayHello()
 gameGrid = [[0,0,0,0,0,0,0,0],
             [0,0,0,0,0,0,0,0],
             [0,0,0,0,0,0,0,0],
-            [0,0,0,1,2,0,0,0],
             [0,0,0,2,1,0,0,0],
+            [0,0,0,1,2,0,0,0],
             [0,0,0,0,0,0,0,0],
             [0,0,0,0,0,0,0,0],
             [0,0,0,0,0,0,0,0]]
@@ -84,6 +90,14 @@ gameGrid = [[0,0,0,0,0,0,0,0],
 ##############################################################################
 # SUB PROGRAMS
 ##############################################################################
+def GetCurrentPiece():
+    currentPiece = 2
+    oppositePiece = 1
+    if(turn == COL_BLACK):
+        currentPiece = 1
+        oppositePiece = 2
+    return currentPiece,oppositePiece
+
 def UpdateScores():
     global p1ScoreSurface,p2ScoreSurface,p1Score,p2Score
 
@@ -92,10 +106,16 @@ def UpdateScores():
 
     for i in range(8):
         for j in range(8):
+
             if(gameGrid[i][j] == 1):
                 p1Score = p1Score + 1
+                if(DEBUG_ON):
+                    print("p1 point")
+
             elif(gameGrid[i][j] == 2):
                 p2Score = p2Score + 1
+                if(DEBUG_ON):
+                    print("p2 point")
 
     p1ScoreSurface = my_font.render(str(p1Score), False, (0, 0, 0))
     p2ScoreSurface = my_font.render(str(p2Score), False, (0, 0, 0))
@@ -153,13 +173,12 @@ def WhatSquareAreWeIn(aPosition):
     row = adjustedY//(GRID_SIZE_Y)
    
     if DEBUG_ON:
-        print("Current x = {}\nCurrrent y = {}".format(currentClickX,currentClickY))
-        print("Col  =  {}".format(col+1))
-        print("row  =  {}".format(row+1))
+        #print("Current x = {}\nCurrrent y = {}".format(currentClickX,currentClickY))
+        #print("Col  =  {}".format(col+1))
+        #print("row  =  {}".format(row+1))
 
         letters = ["a","b","c","d","e","f","g","h"]
-        print("{}{}".format(letters[col],row))
-
+        print("{}{}".format(letters[col],row+1))
 
     return row,col
 
@@ -178,27 +197,175 @@ def DrawTheCurrentGameGrid():
             pieceCol = COL_WHITE
             if(thisPiece == 0):
                 continue # its a blank square
-            elif (thisPiece == 2):
+            elif (thisPiece == 1):
                 pieceCol = COL_BLACK
             
             pygame.draw.circle(surface, pieceCol, (A1_location[0] + col*GRID_SIZE_X, A1_location[1] + row*GRID_SIZE_Y), PIECE_SIZE)
+
+def CheckVerticalUp(currentPiece,oppositePiece,row,col,applyTheMove = True):
+    runFound = True
+    #look for vert run UP
+    numInRun = 0
+    for i in range(row-1,-1,-1):
+        if(gameGrid[i][col] == 0):
+            numInRun = 0  # if we get to a blank square then it cannot be run
+            break
+        if(gameGrid[i][col] == oppositePiece):
+            numInRun = numInRun + 1
+        if(gameGrid[i][col] == currentPiece):
+            break # end of possible run
+    else:
+        numInRun = 0 # if we did not break then it isn't a run!
+
+    if(numInRun == 0):
+        runFound = False
+    else:
+        #Flip the run all over
+        if(applyTheMove):
+            for i in range(row-1,row-1-numInRun,-1):
+                gameGrid[i][col] = currentPiece
+    
+    if(DEBUG_ON):
+        print("Vertical UP move allowed? " + str(runFound))
+        print("Run found : {} ".format(numInRun))
+
+    return runFound
+
+def CheckVerticalDown(currentPiece,oppositePiece,row,col,applyTheMove = True):
+    runFound = True
+    #look for vert run DOWN
+    numInRun = 0
+    for i in range(row+1,8):
+        if(gameGrid[i][col] == 0):
+            numInRun = 0  # if we get to a blank square then it cannot be run
+            break
+        if(gameGrid[i][col] == oppositePiece):
+            numInRun = numInRun + 1
+        if(gameGrid[i][col] == currentPiece):
+            break # end of possible run
+    else:
+        numInRun = 0 # if we did not break then it isn't a run!
+
+    if(numInRun == 0):
+        runFound = False
+    else:
+        #Flip the run all over
+        if(applyTheMove):
+            for i in range(row+1,row+1+numInRun):
+                gameGrid[i][col] = currentPiece
+        
+    if(DEBUG_ON):
+        print("Vertical down move allowed? " + str(runFound))
+        print("Run found : {} ".format(numInRun))
+
+    return runFound
+
+def CheckHorizontalRight(currentPiece,oppositePiece,row,col,applyTheMove = True):
+    runFound = True
+    #look for horizontal run ->
+    numInRun = 0
+    for i in range(col+1,8):
+        if(gameGrid[row][i] == 0):
+            numInRun = 0  # if we get to a blank square then it cannot be run
+            break
+        if(gameGrid[row][i] == oppositePiece):
+            numInRun = numInRun + 1
+        if(gameGrid[row][i] == currentPiece):
+            break # end of possible run
+    else:
+        numInRun = 0 # if we did not break then it isn't a run!
+
+    if(numInRun == 0):
+        runFound = False
+    else:
+        #Flip the run all over
+        for i in range(col+1,col+1+numInRun):
+            gameGrid[row][i] = currentPiece
+    
+    if(DEBUG_ON):
+        print("Horizontal right move allowed? " + str(runFound))
+        print("Run found : {} ".format(numInRun))
+
+    return runFound
+
+def CheckHorizontalLeft(currentPiece,oppositePiece,row,col,applyTheMove=True):
+    runFound = True
+    #look for horizontal run <-
+    numInRun = 0
+    for i in range(col-1,-1,-1):
+        if(gameGrid[row][i] == 0):
+            numInRun = 0  # if we get to a blank square then it cannot be run
+            break
+        if(gameGrid[row][i] == oppositePiece):
+            numInRun = numInRun + 1
+        if(gameGrid[row][i] == currentPiece):
+            break  # end of possible run
+    else:
+        numInRun = 0 # if we did not break then it isn't a run!
+
+    if(numInRun == 0):
+        runFound = False
+    else:
+        #Flip the run all over
+        if(applyTheMove):
+            for i in range(col-1,col-1-numInRun,-1):
+                gameGrid[row][i] = currentPiece
+   
+    if(DEBUG_ON):
+        print("Horizontal left move allowed? " + str(runFound))
+        print("Run found : {} ".format(numInRun))
+
+    return runFound
+
+def MoveAllowed(row, col):
+    #Not all moves are valid!!
+    #1 - Cannot move outside the grid
+    #2 - Cannot add where a piece already is
+    #3 - It must be a legal move that causes pieces to flip
+    #      B W W W W b <--- HERE IS ALLOWED
+    #
+    #     resulting in this...
+    #      B B B B B b <-- The grid after the "flipping"
+
+    atLeastOneRunWasFound = False
+
+    #who is playing this move?
+    currentPiece, oppositePiece = GetCurrentPiece()
+
+    if(gameGrid[row][col] == 1 or gameGrid[row][col] == 2):
+        atLeastOneRunWasFound = False
+        return atLeastOneRunWasFound  # piece is here...  DO NOT ALLOW
+    else:
+        runFound = CheckHorizontalRight(currentPiece, oppositePiece, row, col)
+        if(runFound):
+            atLeastOneRunWasFound = True
+        
+        runFound = CheckHorizontalLeft(currentPiece, oppositePiece, row, col)
+        if(runFound):
+            atLeastOneRunWasFound = True
+
+        runFound = CheckVerticalDown(currentPiece, oppositePiece, row, col)
+        if(runFound):
+            atLeastOneRunWasFound = True
+       
+        runFound = CheckVerticalUp(currentPiece, oppositePiece, row, col)
+        if(runFound):
+            atLeastOneRunWasFound = True
             
+
+    return atLeastOneRunWasFound
+
 def AddPieceToGrid(row,col):
-
-    whatToAdd = 1
-
-    if(turn == COL_BLACK):
-        whatToAdd = 2
+    currentPiece,oppositePiece = GetCurrentPiece()
 
     #Only allow the move if the square is not full already...
-    if(gameGrid[row][col] == 0):
-        gameGrid[row][col] = whatToAdd
+    if(MoveAllowed(row,col)):
+        gameGrid[row][col] = currentPiece
         pygame.mixer.Sound.play(clickSound)
         pygame.mixer.music.stop()
         SwapTurn()
-    else:
-        print("Square taken already!!!  Pick again...")
-
+        UpdateScores()
+  
 def HandleInput(running):
 
     for event in pygame.event.get():
@@ -248,8 +415,6 @@ while running:
     surface.blit(turnIndicatorImage, (460, 0))
 
     surface.blit(scoreImage, (475, 364))
-
-    UpdateScores()
 
     surface.blit(p1ScoreSurface, (514,390))
     surface.blit(p2ScoreSurface, (514,416))
