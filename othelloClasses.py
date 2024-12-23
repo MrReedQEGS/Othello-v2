@@ -3,5 +3,5 @@ class Person:
         self.name = newName
         
     def SayHello(self):
-        print("Hello.  My name is {}.".format(self.name))
+        print("Hello.  My name is {}.  Pleased to meet you.".format(self.name))
     
