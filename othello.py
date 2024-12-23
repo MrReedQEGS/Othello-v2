@@ -48,9 +48,19 @@ GRID_SIZE_Y = 52
 A1_location = (62,50)  #Used to draw pieces in the correct place!
 PIECE_SIZE = 20
 
+p1Score = 2
+p2Score = 2
+
 #sounds
 pygame.mixer.init()
 clickSound = pygame.mixer.Sound("./sounds/click.mp3")
+
+#fonts
+pygame.font.init() # you have to call this at the start, 
+                   # if you want to use this module.
+my_font = pygame.font.SysFont('Comic Sans MS', 16)
+p1ScoreSurface = my_font.render('2', False, (0, 0, 0))
+p2ScoreSurface = my_font.render('2', False, (0, 0, 0))
 
 running = True
 
@@ -74,6 +84,22 @@ gameGrid = [[0,0,0,0,0,0,0,0],
 ##############################################################################
 # SUB PROGRAMS
 ##############################################################################
+def UpdateScores():
+    global p1ScoreSurface,p2ScoreSurface,p1Score,p2Score
+
+    p1Score = 0
+    p2Score = 0
+
+    for i in range(8):
+        for j in range(8):
+            if(gameGrid[i][j] == 1):
+                p1Score = p1Score + 1
+            elif(gameGrid[i][j] == 2):
+                p2Score = p2Score + 1
+
+    p1ScoreSurface = my_font.render(str(p1Score), False, (0, 0, 0))
+    p2ScoreSurface = my_font.render(str(p2Score), False, (0, 0, 0))
+
 def LoadImages(running):
     global backImage,turnIndicatorImage,scoreImage
     try:
@@ -222,6 +248,11 @@ while running:
     surface.blit(turnIndicatorImage, (460, 0))
 
     surface.blit(scoreImage, (475, 364))
+
+    UpdateScores()
+
+    surface.blit(p1ScoreSurface, (514,390))
+    surface.blit(p2ScoreSurface, (514,416))
 
     DrawTurnMarker()
 
