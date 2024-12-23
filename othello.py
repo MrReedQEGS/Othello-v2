@@ -343,8 +343,6 @@ def CheckDiagonalDownRight(currentPiece,oppositePiece,row,col,applyTheMove = Tru
 
     for i in range(1,numOfLoops):
 
-        #print("checking",rowNeedTo7,colNeededTo7,numOfLoops,row+i,col+i)
-
         if(gameGrid[row + i][col + i] == 0):
             numInRun = 0  # if we get to a blank square then it cannot be run
             break
@@ -490,6 +488,8 @@ LoadImages(running)
 
 gameOver = False
 
+gameOverImage = pygame.transform.scale(gameOverImage, (80,80))
+
 #game loop
 while running:
     # Fill the scree with white color - "blank it"
@@ -517,7 +517,7 @@ while running:
         DrawTheCurrentGameGrid()
 
         if(gameOver):
-            surface.blit(gameOverImage, (92, 144))
+            surface.blit(gameOverImage, (470, 180))
         
         pygame.display.flip()
 
