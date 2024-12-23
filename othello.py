@@ -43,8 +43,8 @@ PIECE_SIZE = 20
 
 running = True
 
-turn = COL_WHITE
-turnIndicatorYPos = 50
+turn = COL_BLACK
+turnIndicatorYPos = 24
 
 #Testing some code from a different py file...
 p1 = Person("Fred")
@@ -117,7 +117,6 @@ def WhatSquareAreWeIn(aPosition):
 def DrawTurnMarker():
     pygame.draw.rect(surface, COL_RED, pygame.Rect(487,turnIndicatorYPos, 28, 27),2)
             
-
 def DrawTheCurrentGameGrid():
 
     for row in range(8):
