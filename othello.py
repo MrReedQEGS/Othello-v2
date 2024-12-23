@@ -52,8 +52,8 @@ p1.SayHello()
 gameGrid = [[0,0,0,0,0,0,0,0],
             [0,0,0,0,0,0,0,0],
             [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
+            [0,0,0,1,2,0,0,0],
+            [0,0,0,2,1,0,0,0],
             [0,0,0,0,0,0,0,0],
             [0,0,0,0,0,0,0,0],
             [0,0,0,0,0,0,0,0]]
@@ -117,7 +117,12 @@ def AddPieceToGrid(row,col):
     if(turn == COL_BLACK):
         whatToAdd = 2
 
-    gameGrid[row][col] = whatToAdd
+    #Only allow the move if the square is not full already...
+    if(gameGrid[row][col] == 0):
+        gameGrid[row][col] = whatToAdd
+        SwapTurn()
+    else:
+        print("Square taken already!!!  Pick again...")
 
 def HandleInput(running):
 
@@ -145,10 +150,8 @@ def HandleInput(running):
                 print("NOT ON THE BOARD")
             else:
                 row,col = WhatSquareAreWeIn(somePos)
-
                 AddPieceToGrid(row,col)
-                SwapTurn()
-
+                
     return running
 
 ##############################################################################
