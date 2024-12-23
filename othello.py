@@ -10,6 +10,8 @@ from pygame.locals import *
 # to use pygame's functionality.
 pygame.init()
 
+DEBUG_ON = True
+
 SCREEN_WIDTH = 500
 SCREEN_HEIGHT = 500
 
@@ -23,25 +25,24 @@ COL_WHITE = (255,255,255)
 COL_GREY = (150,150,150)
 COL_RED = (255,0,0)
 BACK_FILL_COLOUR = COL_WHITE
-
-PIECE_SIZE = 20
+backImageName = "othello blank grid.jpg"
 
 TOP_LEFT = (35,22)
 TOP_RIGHT = (452,22)
 BOT_LEFT = (35,438)
 BOT_RIGHT = (452,438)
-
-
-running = True
-colours = []
-
-A1_location = (62,50)
 GRID_SIZE_X = 52
 GRID_SIZE_Y = 52
-backImageName = "othello blank grid.jpg"
+A1_location = (62,50)  #Used to draw pieces in the correct place!
+PIECE_SIZE = 20
+
+running = True
+
+#Testing some code from a different py file...
 p1 = Person("Fred")
 p1.SayHello()
 
+#Make a blank game grid
 gameGrid = [[0,1,0,0,0,0,0,0],
             [0,0,0,0,0,1,1,0],
             [2,0,0,0,0,0,2,0],
@@ -52,6 +53,36 @@ gameGrid = [[0,1,0,0,0,0,0,0],
             [0,0,0,0,0,0,0,0]]
 
 #SUB PROGRAMS
+def WhatSquareAreWeIn(aPosition):
+    #Find out what square somebody clicked on.
+    #For example, if we click top left the the answer is row 1 col 1  (aka  "a1")
+    currentClickX = aPosition[0]
+    currentClickY = aPosition[1]
+   
+    #TOP_LEFT = (35,22)
+    #TOP_RIGHT = (452,22)
+    #BOT_LEFT = (35,438)
+    #BOT_RIGHT = (452,438)
+    #GRID_SIZE_X = 52
+    #GRID_SIZE_Y = 52
+
+    
+    adjustedX = currentClickX-TOP_LEFT[0]
+    col = adjustedX//(GRID_SIZE_X+1)  #The little +1 seems to fix the identifcation of col 6 to 7 which was a bit out?
+   
+
+    adjustedY = currentClickY-TOP_LEFT[1]
+    row = adjustedY//(GRID_SIZE_Y)
+   
+    if DEBUG_ON:
+        print("Current x = {}\nCurrrent y = {}".format(currentClickX,currentClickY))
+        print("Col  =  {}".format(col))
+        print("row  =  {}".format(row))
+
+    return row,col
+
+
+    
 def DrawTheCurrentGameGrid():
 
     for row in range(8):
@@ -114,7 +145,7 @@ while running:
                currentClickY > BOT_RIGHT[1]):
                 print("NOT ON THE BOARD")
             else:
-                print("Current x = {}\nCurrrent y = {}".format(currentClickX,currentClickY))
+                row,col = WhatSquareAreWeIn(somePos)
 
 
     DrawTheCurrentGameGrid()
