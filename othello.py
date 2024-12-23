@@ -16,7 +16,7 @@ from pygame.locals import *
 ##############################################################################
 DEBUG_ON = True
 
-SCREEN_WIDTH = 500
+SCREEN_WIDTH = 560
 SCREEN_HEIGHT = 500
 
 # create the display surface object
@@ -29,7 +29,8 @@ COL_WHITE = (255,255,255)
 COL_GREY = (150,150,150)
 COL_RED = (255,0,0)
 BACK_FILL_COLOUR = COL_WHITE
-backImageName = "othello blank grid.jpg"
+backImageName = "./images/othello blank grid.jpg"
+turnIndicatorImageName = "./images/turnIndicator.jpg"
 
 TOP_LEFT = (35,22)
 TOP_RIGHT = (452,22)
@@ -43,6 +44,7 @@ PIECE_SIZE = 20
 running = True
 
 turn = COL_WHITE
+turnIndicatorYPos = 50
 
 #Testing some code from a different py file...
 p1 = Person("Fred")
@@ -61,12 +63,32 @@ gameGrid = [[0,0,0,0,0,0,0,0],
 ##############################################################################
 # SUB PROGRAMS
 ##############################################################################
+def LoadImages(running):
+    global backImage,turnIndicatorImage
+    try:
+        backImage = pygame.image.load(backImageName).convert()
+    except:
+        print("When loading \"{}\". No image found!!!".format(backImageName))
+        print("Quitting PyGame  :(")
+        running = False
+        return running
+
+    try:
+        turnIndicatorImage = pygame.image.load(turnIndicatorImageName).convert()
+    except:
+        print("When loading \"{}\". No image found!!!".format(turnIndicatorImageName))
+        print("Quitting PyGame  :(")
+        running = False
+        return running
+
 def SwapTurn():
-    global turn
+    global turn,turnIndicatorYPos
     if(turn == COL_WHITE):
         turn = COL_BLACK
+        turnIndicatorYPos = 24
     else:
         turn = COL_WHITE
+        turnIndicatorYPos = 50
 
 def WhatSquareAreWeIn(aPosition):
     #Find out what square somebody clicked on.
@@ -92,6 +114,10 @@ def WhatSquareAreWeIn(aPosition):
 
     return row,col
 
+def DrawTurnMarker():
+    pygame.draw.rect(surface, COL_RED, pygame.Rect(487,turnIndicatorYPos, 28, 27),2)
+            
+
 def DrawTheCurrentGameGrid():
 
     for row in range(8):
@@ -107,7 +133,6 @@ def DrawTheCurrentGameGrid():
             elif (thisPiece == 2):
                 pieceCol = COL_BLACK
             
-            #pygame.draw.rect(surface, colours[col], pygame.Rect(A1_location[0] + col*GRID_SIZE_X, A1_location[1] + row*GRID_SIZE_Y, 10, 10))
             pygame.draw.circle(surface, pieceCol, (A1_location[0] + col*GRID_SIZE_X, A1_location[1] + row*GRID_SIZE_Y), PIECE_SIZE)
 
 def AddPieceToGrid(row,col):
@@ -159,13 +184,7 @@ def HandleInput(running):
 ##############################################################################
 pygame.init()
 
-#Load the background image
-try:
-    backImage = pygame.image.load(backImageName).convert()
-except:
-    print("When loading \"{}\". No image found!!!".format(backImageName))
-    print("Quitting PyGame  :(")
-    running = False
+LoadImages(running)
 
 #game loop
 while running:
@@ -175,6 +194,10 @@ while running:
 
     # Using blit to copy the background grid onto the blank screen
     surface.blit(backImage, (0, 0))
+
+    surface.blit(turnIndicatorImage, (460, 0))
+
+    DrawTurnMarker()
 
     running = HandleInput(running)
    
