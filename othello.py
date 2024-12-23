@@ -59,14 +59,6 @@ def WhatSquareAreWeIn(aPosition):
     currentClickX = aPosition[0]
     currentClickY = aPosition[1]
    
-    #TOP_LEFT = (35,22)
-    #TOP_RIGHT = (452,22)
-    #BOT_LEFT = (35,438)
-    #BOT_RIGHT = (452,438)
-    #GRID_SIZE_X = 52
-    #GRID_SIZE_Y = 52
-
-    
     adjustedX = currentClickX-TOP_LEFT[0]
     col = adjustedX//(GRID_SIZE_X+1)  #The little +1 seems to fix the identifcation of col 6 to 7 which was a bit out?
    
@@ -81,8 +73,6 @@ def WhatSquareAreWeIn(aPosition):
 
     return row,col
 
-
-    
 def DrawTheCurrentGameGrid():
 
     for row in range(8):
@@ -100,6 +90,36 @@ def DrawTheCurrentGameGrid():
             
             #pygame.draw.rect(surface, colours[col], pygame.Rect(A1_location[0] + col*GRID_SIZE_X, A1_location[1] + row*GRID_SIZE_Y, 10, 10))
             pygame.draw.circle(surface, pieceCol, (A1_location[0] + col*GRID_SIZE_X, A1_location[1] + row*GRID_SIZE_Y), PIECE_SIZE)
+
+
+def HandleInput(running):
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+            
+
+        #Toggle grid centre markers?
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                pass
+
+        #Detect a mouse up
+        if event.type == pygame.MOUSEBUTTONUP:
+            somePos = pygame.mouse.get_pos()
+            
+            currentClickX = somePos[0]
+            currentClickY = somePos[1]
+
+            if(currentClickX < TOP_LEFT[0] or
+               currentClickX > TOP_RIGHT[0] or
+               currentClickY < TOP_LEFT[1] or
+               currentClickY > BOT_RIGHT[1]):
+                print("NOT ON THE BOARD")
+            else:
+                row,col = WhatSquareAreWeIn(somePos)
+
+    return running
 
 #MAIN
 
@@ -123,33 +143,11 @@ while running:
     # Using blit to copy the background grid onto the blank screen
     surface.blit(backImage, (0, 0))
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
-        #Toggle grid centre markers?
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                pass
-
-        #Detect a mouse up
-        if event.type == pygame.MOUSEBUTTONUP:
-            somePos = pygame.mouse.get_pos()
+    running = HandleInput(running)
+   
+    if(running):
+        DrawTheCurrentGameGrid()
             
-            currentClickX = somePos[0]
-            currentClickY = somePos[1]
-
-            if(currentClickX < TOP_LEFT[0] or
-               currentClickX > TOP_RIGHT[0] or
-               currentClickY < TOP_LEFT[1] or
-               currentClickY > BOT_RIGHT[1]):
-                print("NOT ON THE BOARD")
-            else:
-                row,col = WhatSquareAreWeIn(somePos)
-
-
-    DrawTheCurrentGameGrid()
-          
-    pygame.display.flip()
+        pygame.display.flip()
 
 pygame.quit()
