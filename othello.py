@@ -24,7 +24,7 @@ from pygame.locals import *
 ##############################################################################
 # VARIABLES
 ##############################################################################
-DEBUG_ON = True
+DEBUG_ON = False
 
 SCREEN_WIDTH = 560
 SCREEN_HEIGHT = 460
@@ -73,6 +73,9 @@ running = True
 turn = COL_BLACK
 turnIndicatorYPos = 24
 
+alwaysShowNextMoves = True
+nextMoveColour = (200,200,200)
+
 #Testing some code from a different py file...
 p1 = Person("Fred")
 p1.SayHello()
@@ -90,6 +93,16 @@ gameGrid = [[0,0,0,0,0,0,0,0],
 ##############################################################################
 # SUB PROGRAMS
 ##############################################################################
+def GetEmptySquares():
+    emptySquares = []
+    #find everywhere that does not have a piece on it
+    for i in range(8):
+        for j in range(8):
+            if(gameGrid[i][j] == 0):
+                emptySquares.append((j,i))
+
+    return emptySquares
+
 def GetCurrentPiece():
     currentPiece = 2
     oppositePiece = 1
@@ -168,19 +181,18 @@ def WhatSquareAreWeIn(aPosition):
     adjustedX = currentClickX-TOP_LEFT[0]
     col = adjustedX//(GRID_SIZE_X+1) #The +1 in the brackets seems to fix the identifcation of col 6 to 7 which was a bit out?
    
-
     adjustedY = currentClickY-TOP_LEFT[1]
     row = adjustedY//(GRID_SIZE_Y)
    
     if DEBUG_ON:
-        #print("Current x = {}\nCurrrent y = {}".format(currentClickX,currentClickY))
-        #print("Col  =  {}".format(col+1))
-        #print("row  =  {}".format(row+1))
+        print("Current x = {}\nCurrrent y = {}".format(currentClickX,currentClickY))
+        print("Col  =  {}".format(col))
+        print("row  =  {}".format(row))
 
         letters = ["a","b","c","d","e","f","g","h"]
         print("{}{}".format(letters[col],row+1))
 
-    return row,col
+    return col,row
 
 def DrawTurnMarker():
     pygame.draw.rect(surface, COL_DARK_BLUE, pygame.Rect(487,turnIndicatorYPos, 28, 27),2)
@@ -225,9 +237,9 @@ def CheckVerticalUp(currentPiece,oppositePiece,row,col,applyTheMove = True):
             for i in range(row-1,row-1-numInRun,-1):
                 gameGrid[i][col] = currentPiece
     
-    if(DEBUG_ON):
-        print("Vertical UP move allowed? " + str(runFound))
-        print("Run found : {} ".format(numInRun))
+        if(DEBUG_ON):
+            print("Vertical UP move allowed? " + str(runFound))
+            print("Run found : {} ".format(numInRun))
 
     return runFound
 
@@ -254,9 +266,9 @@ def CheckVerticalDown(currentPiece,oppositePiece,row,col,applyTheMove = True):
             for i in range(row+1,row+1+numInRun):
                 gameGrid[i][col] = currentPiece
         
-    if(DEBUG_ON):
-        print("Vertical down move allowed? " + str(runFound))
-        print("Run found : {} ".format(numInRun))
+        if(DEBUG_ON):
+            print("Vertical down move allowed? " + str(runFound))
+            print("Run found : {} ".format(numInRun))
 
     return runFound
 
@@ -279,12 +291,13 @@ def CheckHorizontalRight(currentPiece,oppositePiece,row,col,applyTheMove = True)
         runFound = False
     else:
         #Flip the run all over
-        for i in range(col+1,col+1+numInRun):
-            gameGrid[row][i] = currentPiece
+        if(applyTheMove):
+            for i in range(col+1,col+1+numInRun):
+                gameGrid[row][i] = currentPiece
     
-    if(DEBUG_ON):
-        print("Horizontal right move allowed? " + str(runFound))
-        print("Run found : {} ".format(numInRun))
+        if(DEBUG_ON):
+            print("Horizontal right move allowed? " + str(runFound))
+            print("Run found : {} ".format(numInRun))
 
     return runFound
 
@@ -311,13 +324,13 @@ def CheckHorizontalLeft(currentPiece,oppositePiece,row,col,applyTheMove=True):
             for i in range(col-1,col-1-numInRun,-1):
                 gameGrid[row][i] = currentPiece
    
-    if(DEBUG_ON):
-        print("Horizontal left move allowed? " + str(runFound))
-        print("Run found : {} ".format(numInRun))
+        if(DEBUG_ON):
+            print("Horizontal left move allowed? " + str(runFound))
+            print("Run found : {} ".format(numInRun))
 
     return runFound
 
-def MoveAllowed(row, col):
+def MoveAllowed(somecol, somerow, applyTheMove):
     #Not all moves are valid!!
     #1 - Cannot move outside the grid
     #2 - Cannot add where a piece already is
@@ -332,67 +345,92 @@ def MoveAllowed(row, col):
     #who is playing this move?
     currentPiece, oppositePiece = GetCurrentPiece()
 
-    if(gameGrid[row][col] == 1 or gameGrid[row][col] == 2):
+    if(gameGrid[somerow][somecol] == 1 or gameGrid[somerow][somecol] == 2):
         atLeastOneRunWasFound = False
         return atLeastOneRunWasFound  # piece is here...  DO NOT ALLOW
     else:
-        runFound = CheckHorizontalRight(currentPiece, oppositePiece, row, col)
+        runFound = CheckHorizontalRight(currentPiece, oppositePiece, somerow, somecol, applyTheMove)
         if(runFound):
             atLeastOneRunWasFound = True
         
-        runFound = CheckHorizontalLeft(currentPiece, oppositePiece, row, col)
+        runFound = CheckHorizontalLeft(currentPiece, oppositePiece, somerow, somecol, applyTheMove)
         if(runFound):
             atLeastOneRunWasFound = True
 
-        runFound = CheckVerticalDown(currentPiece, oppositePiece, row, col)
+        runFound = CheckVerticalDown(currentPiece, oppositePiece, somerow, somecol, applyTheMove)
         if(runFound):
             atLeastOneRunWasFound = True
        
-        runFound = CheckVerticalUp(currentPiece, oppositePiece, row, col)
+        runFound = CheckVerticalUp(currentPiece, oppositePiece, somerow, somecol, applyTheMove)
         if(runFound):
             atLeastOneRunWasFound = True
             
-
     return atLeastOneRunWasFound
 
-def AddPieceToGrid(row,col):
+def ShowNextMoves(gameOver):
+
+    if(gameOver):
+        return
+
+    emptySquares = GetEmptySquares()
+    
+    atLeastOneMove = False
+
+    for square in emptySquares:
+        if(MoveAllowed(square[0],square[1],False)):
+            if(alwaysShowNextMoves):
+                atLeastOneMove = True
+                pygame.draw.rect(surface, nextMoveColour, pygame.Rect(37+square[0]*GRID_SIZE_X,24+square[1]*GRID_SIZE_Y, GRID_SIZE_X, GRID_SIZE_Y),6)
+
+    if(alwaysShowNextMoves and not atLeastOneMove):
+        print("NO MORE MOVES...GAME OVER!!!")
+        return False
+    else:
+        return True
+
+def AddPieceToGrid(col,row):
+
     currentPiece,oppositePiece = GetCurrentPiece()
 
     #Only allow the move if the square is not full already...
-    if(MoveAllowed(row,col)):
+    if(MoveAllowed(col,row,True)):
         gameGrid[row][col] = currentPiece
         pygame.mixer.Sound.play(clickSound)
         pygame.mixer.music.stop()
         SwapTurn()
         UpdateScores()
   
-def HandleInput(running):
+def HandleInput(running,gameOver):
+
+    global alwaysShowNextMoves
 
     for event in pygame.event.get():
+
         if event.type == pygame.QUIT:
             running = False
-            
 
-        #Toggle grid centre markers?
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                pass
+        if(not gameOver):    
+            #Toggle grid centre markers?
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    alwaysShowNextMoves = not alwaysShowNextMoves
 
-        #Detect a mouse up
-        if event.type == pygame.MOUSEBUTTONUP:
-            somePos = pygame.mouse.get_pos()
-            
-            currentClickX = somePos[0]
-            currentClickY = somePos[1]
+            #Detect a mouse up
+            if event.type == pygame.MOUSEBUTTONUP:
 
-            if(currentClickX < TOP_LEFT[0] or
-               currentClickX > TOP_RIGHT[0] or
-               currentClickY < TOP_LEFT[1] or
-               currentClickY > BOT_RIGHT[1]):
-                print("NOT ON THE BOARD")
-            else:
-                row,col = WhatSquareAreWeIn(somePos)
-                AddPieceToGrid(row,col)
+                somePos = pygame.mouse.get_pos()
+                
+                currentClickX = somePos[0]
+                currentClickY = somePos[1]
+
+                if(currentClickX < TOP_LEFT[0] or
+                currentClickX > TOP_RIGHT[0] or
+                currentClickY < TOP_LEFT[1] or
+                currentClickY > BOT_RIGHT[1]):
+                    print("NOT ON THE BOARD")
+                else:
+                    col,row = WhatSquareAreWeIn(somePos)
+                    AddPieceToGrid(col,row)
                 
     return running
 
@@ -402,6 +440,8 @@ def HandleInput(running):
 pygame.init()
 
 LoadImages(running)
+
+gameOver = False
 
 #game loop
 while running:
@@ -421,7 +461,11 @@ while running:
 
     DrawTurnMarker()
 
-    running = HandleInput(running)
+    if ShowNextMoves(gameOver) == False:
+        gameOver = True
+        #game over happened!!!
+
+    running = HandleInput(running,gameOver)
    
     if(running):
         DrawTheCurrentGameGrid()
