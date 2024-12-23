@@ -8,6 +8,9 @@
 #
 ##############################################################################
 
+#To do
+# Store the board before a move and then undo will be easy
+
 ##############################################################################
 # IMPORTS
 ##############################################################################
@@ -358,12 +361,111 @@ def CheckDiagonalDownRight(currentPiece,oppositePiece,row,col,applyTheMove = Tru
     else:
         #Flip the run all over
         if(applyTheMove):
-            for i in range(row+1,row+1+numInRun):
-                for j in range(col+1,col+1+numInRun):
-                    gameGrid[i][j] = currentPiece
+            for i in range(numInRun):
+                gameGrid[row+1+i][col+1+i] = currentPiece
         
         if(DEBUG_ON):
             print("diagonal right down move allowed? " + str(runFound))
+            print("Run found : {} ".format(numInRun))
+
+    return runFound
+
+def CheckDiagonalDownLeft(currentPiece,oppositePiece,row,col,applyTheMove = True):
+    runFound = True
+    #look for diagonal run DOWN LEFT
+    numInRun = 0
+    rowNeedTo7 = 7-row
+    colNeededTo0 = col
+    numOfLoops = min(rowNeedTo7,colNeededTo0)
+
+    for i in range(1,numOfLoops):
+
+        if(gameGrid[row + i][col - i] == 0):
+            numInRun = 0  # if we get to a blank square then it cannot be run
+            break
+        if(gameGrid[row + i][col - i] == oppositePiece):
+            numInRun = numInRun + 1
+        if(gameGrid[row + i][col - i] == currentPiece):
+            break # end of possible run
+    else:
+        numInRun = 0 # if we did not break then it isn't a run!
+
+    if(numInRun == 0):
+        runFound = False
+    else:
+        #Flip the run all over
+        if(applyTheMove):
+            for i in range(numInRun):
+                gameGrid[row+1+i][col-1-i] = currentPiece
+        
+        if(DEBUG_ON):
+            print("diagonal left down move allowed? " + str(runFound))
+            print("Run found : {} ".format(numInRun))
+
+    return runFound
+
+def CheckDiagonalUpLeft(currentPiece,oppositePiece,row,col,applyTheMove = True):
+    runFound = True
+    #look for diagonal run UP LEFT
+    numInRun = 0
+    rowNeedTo0 = row
+    colNeededTo0 = col
+    numOfLoops = min(rowNeedTo0,colNeededTo0)
+
+    for i in range(0,numOfLoops):
+        if(gameGrid[row -1 - i][col -1 -i] == 0):
+            numInRun = 0  # if we get to a blank square then it cannot be run
+            break
+        if(gameGrid[row - 1 - i][col - 1 - i] == oppositePiece):
+            numInRun = numInRun + 1
+        if(gameGrid[row - 1 - i][col - 1 - i] == currentPiece):
+            break # end of possible run
+    else:
+        numInRun = 0 # if we did not break then it isn't a run!
+
+    if(numInRun == 0):
+        runFound = False
+    else:
+        #Flip the run all over
+        if(applyTheMove):
+            for i in range(numInRun):
+                gameGrid[row-1-i][col-1-i] = currentPiece
+        
+        if(applyTheMove):
+            print("diagonal left up move allowed? " + str(runFound))
+            print("Run found : {} ".format(numInRun))
+
+    return runFound
+
+def CheckDiagonalUpRight(currentPiece,oppositePiece,row,col,applyTheMove = True):
+    runFound = True
+    #look for diagonal run UP RIGHT
+    numInRun = 0
+    rowNeedTo0 = row
+    colNeededTo7 = 7-col
+    numOfLoops = min(rowNeedTo0,colNeededTo7)
+
+    for i in range(0,numOfLoops):
+        if(gameGrid[row - 1 - i][col +1 +i] == 0):
+            numInRun = 0  # if we get to a blank square then it cannot be run
+            break
+        if(gameGrid[row - 1 - i][col + 1 + i] == oppositePiece):
+            numInRun = numInRun + 1
+        if(gameGrid[row - 1 - i][col + 1 + i] == currentPiece):
+            break # end of possible run
+    else:
+        numInRun = 0 # if we did not break then it isn't a run!
+
+    if(numInRun == 0):
+        runFound = False
+    else:
+        #Flip the run all over
+        if(applyTheMove):
+            for i in range(numInRun):
+                gameGrid[row-1-i][col+1+i] = currentPiece
+        
+        if(applyTheMove):
+            print("diagonal right up move allowed? " + str(runFound))
             print("Run found : {} ".format(numInRun))
 
     return runFound
@@ -404,6 +506,18 @@ def MoveAllowed(somecol, somerow, applyTheMove):
             atLeastOneRunWasFound = True
 
         runFound = CheckDiagonalDownRight(currentPiece, oppositePiece, somerow, somecol, applyTheMove)
+        if(runFound):
+            atLeastOneRunWasFound = True
+
+        runFound = CheckDiagonalDownLeft(currentPiece, oppositePiece, somerow, somecol, applyTheMove)
+        if(runFound):
+            atLeastOneRunWasFound = True
+
+        runFound = CheckDiagonalUpLeft(currentPiece, oppositePiece, somerow, somecol, applyTheMove)
+        if(runFound):
+            atLeastOneRunWasFound = True
+
+        runFound = CheckDiagonalUpRight(currentPiece, oppositePiece, somerow, somecol, applyTheMove)
         if(runFound):
             atLeastOneRunWasFound = True
 
