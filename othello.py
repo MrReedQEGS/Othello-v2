@@ -17,7 +17,7 @@
 ##############################################################################
 import pygame, random, time
 from pygame.locals import *
-from othelloClasses import perpetualTimer,MyGameGrid
+from othelloClasses import perpetualTimer,MyGameGrid,MyClickableImageButton
 
 ##############################################################################
 # VARIABLES
@@ -28,10 +28,7 @@ EMPTY_SQUARE = 0
 BLACK_PIECE = 1
 WHITE_PIECE = 2
 theGameGrid = MyGameGrid(8,8,[EMPTY_SQUARE,BLACK_PIECE,WHITE_PIECE],0)
-theGameGrid.SetGridItem((3,3),WHITE_PIECE)
-theGameGrid.SetGridItem((4,3),BLACK_PIECE)
-theGameGrid.SetGridItem((4,4),WHITE_PIECE)
-theGameGrid.SetGridItem((3,4),BLACK_PIECE)
+
 
 DEBUG_ON = False
 
@@ -128,6 +125,13 @@ if(myZeroPointOneTimer == None):
 ##############################################################################
 # SUB PROGRAMS
 ##############################################################################
+def MakeTheStartingBoard():
+    theGameGrid.BlankTheGrid()
+    theGameGrid.SetGridItem((3,3),WHITE_PIECE)
+    theGameGrid.SetGridItem((4,3),BLACK_PIECE)
+    theGameGrid.SetGridItem((4,4),WHITE_PIECE)
+    theGameGrid.SetGridItem((3,4),BLACK_PIECE)
+
 def TurnOffTimers():
         
     global myOneSecondTimer,myZeroPointOneTimer
@@ -677,7 +681,11 @@ LoadImages(running)
 
 gameOver = False
 
+MakeTheStartingBoard()
+
 gameOverImage = pygame.transform.scale(gameOverImage, (80,80))
+
+theUndoButton = MyClickableImageButton(479,455,undoImage,surface)
 
 #game loop
 while running:
@@ -694,7 +702,8 @@ while running:
     surface.blit(p1ScoreSurface, (514,390))
     surface.blit(p2ScoreSurface, (514,416))
 
-    surface.blit(undoImage, (479,455))
+    #surface.blit(undoImage, (479,455))
+    theUndoButton.DrawSelf()
 
     DrawTurnMarker()
 
