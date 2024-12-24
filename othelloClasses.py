@@ -19,26 +19,30 @@ class perpetualTimer():
    def cancel(self):
       self.thread.cancel()
 
-#Clickable image button class
+#Clickable image button class with callback function
 import pygame
 class MyClickableImageButton:
-    def __init__(self, x, y, newImage,newParentSurface):
+    def __init__(self, x, y, newImage,newGreyImg,newParentSurface,theNewCallback):
         self.img=newImage
+        self.greyImg = newGreyImg
         self.rect=self.img.get_rect()
         self.rect.topleft=(x,y)
         self.clicked=False
         self.parentSurfce=newParentSurface
+        self.theCallback = theNewCallback
 
     def DrawSelf(self):
-        self.parentSurfce.blit(self.img, (self.rect.x, self.rect.y))
+        #The button will be grey until the mouse hovers over it!
+        self.parentSurfce.blit(self.greyImg, (self.rect.x, self.rect.y))
         pos=pygame.mouse.get_pos()
         if self.rect.collidepoint(pos):
             if pygame.mouse.get_pressed()[0] and not self.clicked:
                 self.clicked=True
-                print("HEllo from the button")
+                self.theCallback()
             if not pygame.mouse.get_pressed()[0]:
                 self.clicked=False
                 self.parentSurfce.blit(self.img, (self.rect.x, self.rect.y))
+
 
 #A Generic game grid class - It deals with the dreaded "rows" and "cols" V (x,y) situation for easy coding!
 class MyGameGrid():

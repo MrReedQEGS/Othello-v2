@@ -52,6 +52,7 @@ turnIndicatorImageName = "./images/turnIndicator.jpg"
 scoreImageName = "./images/score.jpg"
 gameOverImageName = "./images/gameOver.jpg"
 undoImageName = "./images/Undo.jpg"
+undoImageGreyName = "./images/UndoGrey.jpg"
 
 TOP_LEFT = (35,22)
 TOP_RIGHT = (452,22)
@@ -185,7 +186,7 @@ def UpdateScores():
     p2ScoreSurface = my_font.render(str(p2Score), False, (0, 0, 0))
 
 def LoadImages(running):
-    global backImage,turnIndicatorImage,scoreImage,gameOverImage,undoImage
+    global backImage,turnIndicatorImage,scoreImage,gameOverImage,undoImage,undoGreyImage
     try:
         backImage = pygame.image.load(backImageName).convert()
         if(DEBUG_ON):
@@ -223,6 +224,16 @@ def LoadImages(running):
             print("\"{}\". Loaded successfully.".format(undoImageName))
     except:
         print("When loading \"{}\". No image found!!!".format(undoImageName))
+        print("Quitting PyGame  :(")
+        running = False
+        return running
+    
+    try:
+        undoGreyImage = pygame.image.load(undoImageGreyName).convert()
+        if(DEBUG_ON):
+            print("\"{}\". Loaded successfully.".format(undoImageGreyName))
+    except:
+        print("When loading \"{}\". No image found!!!".format(undoImageGreyName))
         print("Quitting PyGame  :(")
         running = False
         return running
@@ -672,6 +683,9 @@ def HandleInput(running,gameOver):
                 
     return running
 
+def UndoButtonCallback():
+    print("Undo pressed")
+
 ##############################################################################
 # MAIN
 ##############################################################################
@@ -685,7 +699,7 @@ MakeTheStartingBoard()
 
 gameOverImage = pygame.transform.scale(gameOverImage, (80,80))
 
-theUndoButton = MyClickableImageButton(479,455,undoImage,surface)
+theUndoButton = MyClickableImageButton(479,455,undoImage,undoGreyImage,surface,UndoButtonCallback)
 
 #game loop
 while running:
@@ -702,7 +716,6 @@ while running:
     surface.blit(p1ScoreSurface, (514,390))
     surface.blit(p2ScoreSurface, (514,416))
 
-    #surface.blit(undoImage, (479,455))
     theUndoButton.DrawSelf()
 
     DrawTurnMarker()
