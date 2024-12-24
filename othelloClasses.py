@@ -31,8 +31,10 @@ class MyGameGrid():
         self.cols = newCols
         self.listOfAllowedCellItems = newListOfAllowedCellItems
         self.posOfBlankItem = newPosOfBlankItem
+        self.BlankTheGrid()
 
-        #now make the blank grid
+    def BlankTheGrid(self):
+        #Make the whole grid "blank"
         blankThing = self.listOfAllowedCellItems[self.posOfBlankItem]
         self.theGrid = []
         for i in range(self.rows):
