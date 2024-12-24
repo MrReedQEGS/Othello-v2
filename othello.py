@@ -11,7 +11,6 @@
 #To do
 # Store the board before a move and then undo will be easy
 # Splash screen - state machine.  Ability to have another go
-# Pulsing next square go in both directions in terms of colour
 
 ##############################################################################
 # IMPORTS
@@ -84,7 +83,9 @@ running = True
 turn = COL_BLACK
 turnIndicatorYPos = 24
 alwaysShowNextMoves = True
-nextMoveColour = (50,50,50)
+nextMoveColour = (50,50,200)
+lighter = True # Controls the direction of the colour fade on the next move squares
+nextMoveThickness = 1
 
 #Timer callbacks
 def OneSecondCallback():
@@ -93,12 +94,21 @@ def OneSecondCallback():
     gameTime = gameTime + 1
 
 def ZeroPointOneSecondCallback():
-    global nextMoveColour
+    global nextMoveColour,lighter,nextMoveThickness
 
-    if(nextMoveColour[0] < 160):
-        nextMoveColour = (nextMoveColour[0]+5,nextMoveColour[1]+5,nextMoveColour[2]+5)
-    else:  
-        nextMoveColour = (50,50,50)  
+    if(lighter == True):
+        if(nextMoveColour[0] < 120):
+            nextMoveColour = (nextMoveColour[0]+10,nextMoveColour[1]+10,200)
+            nextMoveThickness = nextMoveThickness + 1
+        else:  
+            lighter = False
+    else:
+        if(nextMoveColour[0] > 50):
+            nextMoveColour = (nextMoveColour[0]-10,nextMoveColour[1]-10,200)
+            nextMoveThickness = nextMoveThickness - 1
+        else:  
+            lighter = True
+
     
 gameTime = 0
 gameTimeSurface = my_font.render("Time elapsed : {}".format(gameTime), False, (0, 0, 0))
@@ -482,7 +492,7 @@ def CheckDiagonalUpLeft(currentPiece,oppositePiece,row,col,applyTheMove = True):
             for i in range(numInRun):
                 theGameGrid.SetGridItem((col-1-i,row-1-i),currentPiece)
         
-        if(applyTheMove):
+        if(DEBUG_ON):
             print("diagonal left up move allowed? " + str(runFound))
             print("Run found : {} ".format(numInRun))
 
@@ -516,13 +526,13 @@ def CheckDiagonalUpRight(currentPiece,oppositePiece,row,col,applyTheMove = True)
             for i in range(numInRun):
                 theGameGrid.SetGridItem((col+1+i,row-1-i),currentPiece)
         
-        if(applyTheMove):
+        if(DEBUG_ON):
             print("diagonal right up move allowed? " + str(runFound))
             print("Run found : {} ".format(numInRun))
 
     return runFound
 
-def MoveAllowed(somecol, somerow, applyTheMove):
+def IsMoveAllowed(somecol, somerow, applyTheMove):
     #Not all moves are valid!!
     #1 - Cannot move outside the grid
     #2 - Cannot add where a piece already is
@@ -540,9 +550,9 @@ def MoveAllowed(somecol, somerow, applyTheMove):
     currentGridItem = theGameGrid.GetGridItem((somecol,somerow))
 
     if(currentGridItem == BLACK_PIECE or currentGridItem == WHITE_PIECE):
-        atLeastOneRunWasFound = False
-        return atLeastOneRunWasFound  # piece is here...  DO NOT ALLOW
+        return False  # piece is here...  DO NOT ALLOW the move
     else:
+        #Its an empty space...does it make an allowed "run"
         runFound = CheckHorizontalRight(currentPiece, oppositePiece, somerow, somecol, applyTheMove)
         if(runFound):
             atLeastOneRunWasFound = True
@@ -587,10 +597,10 @@ def ShowNextMoves(gameOver):
     atLeastOneMove = False
 
     for square in emptySquares:
-        if(MoveAllowed(square[0],square[1],False)):
+        if(IsMoveAllowed(square[0],square[1],False)):
             if(alwaysShowNextMoves):
                 atLeastOneMove = True
-                pygame.draw.rect(surface, nextMoveColour, pygame.Rect(37+square[0]*GRID_SIZE_X,24+square[1]*GRID_SIZE_Y, GRID_SIZE_X, GRID_SIZE_Y),6)
+                pygame.draw.rect(surface, nextMoveColour, pygame.Rect(37+square[0]*GRID_SIZE_X+5,24+square[1]*GRID_SIZE_Y+5, GRID_SIZE_X-10, GRID_SIZE_Y-10),nextMoveThickness)
 
     if(alwaysShowNextMoves and not atLeastOneMove):
         print("NO MORE MOVES...GAME OVER!!!")
@@ -603,7 +613,7 @@ def AddPieceToGrid(col,row):
     currentPiece,oppositePiece = GetCurrentPiece()
 
     #Only allow the move if the square is not full already...
-    if(MoveAllowed(col,row,True)):
+    if(IsMoveAllowed(col,row,True)):
         theGameGrid.SetGridItem((col,row), currentPiece)
         pygame.mixer.Sound.play(clickSound)
         pygame.mixer.music.stop()
