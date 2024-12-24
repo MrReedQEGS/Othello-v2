@@ -61,8 +61,8 @@ undoImageName = "./images/Undo.jpg"
 undoImageGreyName = "./images/UndoGrey.jpg"
 muteImageName = "./images/Mute.jpg"
 muteImageGreyName = "./images/MuteGrey.jpg"
-helpImageName = "./images/Help.jpg"
-helpImageGreyName = "./images/HelpGrey.jpg"
+infoImageName = "./images/Info.jpg"
+infoImageGreyName = "./images/InfoGrey.jpg"
 
 TOP_LEFT = (35,22)
 TOP_RIGHT = (452,22)
@@ -204,7 +204,7 @@ def UpdateScores():
 
 def LoadImages():
     global backImage,turnIndicatorImage,scoreImage,undoImage,undoGreyImage,muteImage,muteGreyImage
-    global helpImage,helpGreyImage,gameOverImage
+    global infoImage,infoGreyImage,gameOverImage
  
     backImage = pygame.image.load(backImageName).convert()
     turnIndicatorImage = pygame.image.load(turnIndicatorImageName).convert()
@@ -213,8 +213,8 @@ def LoadImages():
     undoGreyImage = pygame.image.load(undoImageGreyName).convert()
     muteImage = pygame.image.load(muteImageName).convert()
     muteGreyImage = pygame.image.load(muteImageGreyName).convert()
-    helpImage = pygame.image.load(helpImageName).convert()
-    helpGreyImage = pygame.image.load(helpImageGreyName).convert()
+    infoImage = pygame.image.load(infoImageName).convert()
+    infoGreyImage = pygame.image.load(infoImageGreyName).convert()
     gameOverImage = pygame.image.load(gameOverImageName).convert()
 
         
@@ -670,7 +670,7 @@ def MuteButtonCallback():
         musicOn = True
         pygame.mixer.music.unpause()
             
-def HelpButtonCallback():
+def InfoButtonCallback():
     global alwaysShowNextMoves
     alwaysShowNextMoves = not alwaysShowNextMoves
 
@@ -689,7 +689,7 @@ gameOverImage = pygame.transform.scale(gameOverImage, (80,80))
 
 theUndoButton = MyClickableImageButton(426,455,undoImage,undoGreyImage,surface,UndoButtonCallback)
 theMuteButton = MyClickableImageButton(396,455,muteImage,muteGreyImage,surface,MuteButtonCallback)
-theHelpButton = MyClickableImageButton(366,455,helpImage,helpGreyImage,surface,HelpButtonCallback)
+theInfoButton = MyClickableImageButton(366,455,infoImage,infoGreyImage,surface,InfoButtonCallback)
 
 #game loop
 while running:
@@ -708,7 +708,7 @@ while running:
 
     theUndoButton.DrawSelf()
     theMuteButton.DrawSelf()
-    theHelpButton.DrawSelf()
+    theInfoButton.DrawSelf()
 
     DrawTurnMarker()
 
