@@ -19,6 +19,9 @@ import pygame, random, time
 from pygame.locals import *
 from othelloClasses import perpetualTimer,MyGameGrid,MyClickableImageButton
 
+import tkinter
+from tkinter import messagebox
+
 ##############################################################################
 # VARIABLES
 ##############################################################################
@@ -28,7 +31,6 @@ EMPTY_SQUARE = 0
 BLACK_PIECE = 1
 WHITE_PIECE = 2
 theGameGrid = MyGameGrid(8,8,[EMPTY_SQUARE,BLACK_PIECE,WHITE_PIECE],0)
-
 
 DEBUG_ON = False
 
@@ -127,11 +129,15 @@ if(myZeroPointOneTimer == None):
 # SUB PROGRAMS
 ##############################################################################
 def MakeTheStartingBoard():
+    global turn,turnIndicatorYPos
+    turn = COL_BLACK
+    turnIndicatorYPos = 24
     theGameGrid.BlankTheGrid()
     theGameGrid.SetGridItem((3,3),WHITE_PIECE)
     theGameGrid.SetGridItem((4,3),BLACK_PIECE)
     theGameGrid.SetGridItem((4,4),WHITE_PIECE)
     theGameGrid.SetGridItem((3,4),BLACK_PIECE)
+    UpdateScores()
 
 def TurnOffTimers():
         
@@ -647,8 +653,8 @@ def AddPieceToGrid(col,row):
         UpdateScores()
   
 def HandleInput(running,gameOver):
-
-    global alwaysShowNextMoves
+    
+    global alwaysShowNextMoves,waitingForYesNo
 
     for event in pygame.event.get():
 
@@ -677,6 +683,7 @@ def HandleInput(running,gameOver):
                         print("NOT ON THE BOARD")
                     else:
                         pass
+
                 else:
                     col,row = WhatSquareAreWeIn(somePos)
                     AddPieceToGrid(col,row)
@@ -684,7 +691,11 @@ def HandleInput(running,gameOver):
     return running
 
 def UndoButtonCallback():
-    print("Undo pressed")
+    pygame.event.set_blocked(pygame.MOUSEBUTTONUP) #Turn off events so pygame does not think it is a move!
+    answer = messagebox.askyesno("Question","Do you really want to undo the last move?")
+    if(answer):
+        MakeTheStartingBoard()
+    pygame.event.set_allowed(None)
 
 ##############################################################################
 # MAIN
