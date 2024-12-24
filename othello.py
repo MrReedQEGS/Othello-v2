@@ -694,7 +694,7 @@ while running:
     surface.blit(p1ScoreSurface, (514,390))
     surface.blit(p2ScoreSurface, (514,416))
 
-    surface.blit(undoImage, (40,40))
+    surface.blit(undoImage, (479,455))
 
     DrawTurnMarker()
 
