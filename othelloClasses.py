@@ -1,22 +1,16 @@
-class Person():
-    def __init__(self,newName):
-        self.name = newName
-    
-    def SayHello(self):
-        print("Hello my name is {}".format(self.name))
-
-#Keeping track of game time in a separate thread
+# This class can be used to make a call back function that runs at any time interval
+# Perfect for game time, etc.  Just set the "timeBetweenCallbacks" to 1 for a 1 second timer!
 from threading import Timer,Thread,Event
 class perpetualTimer():
 
-   def __init__(self,t,hFunction):
-      self.t=t
+   def __init__(self,timeBetweenCallbacks,hFunction):
+      self.timeBetweenCallbacks=timeBetweenCallbacks
       self.hFunction = hFunction
-      self.thread = Timer(self.t,self.handle_function)
+      self.thread = Timer(self.timeBetweenCallbacks,self.handle_function)
 
    def handle_function(self):
       self.hFunction()
-      self.thread = Timer(self.t,self.handle_function)
+      self.thread = Timer(self.timeBetweenCallbacks,self.handle_function)
       self.thread.start()
 
    def start(self):
@@ -25,12 +19,13 @@ class perpetualTimer():
    def cancel(self):
       self.thread.cancel()
 
+#A Generic game grid class - It deals with the dreaded "rows" and "cols" V (x,y) situation for easy coding!
 class MyGameGrid():
     def __init__(self,newRows,newCols,newListOfAllowedCellItems,newPosOfBlankItem):
         self.rows = newRows
         self.cols = newCols
         self.listOfAllowedCellItems = newListOfAllowedCellItems
-        self.posOfBlankItem = newPosOfBlankItem
+        self.posOfBlankItem = newPosOfBlankItem  #The position in the allowed items list of the thing that represents "BLANK"
         self.BlankTheGrid()
 
     def BlankTheGrid(self):

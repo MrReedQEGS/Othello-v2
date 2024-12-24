@@ -10,6 +10,9 @@
 
 #To do
 # Store the board before a move and then undo will be easy
+# Fully integrate gameGrid class
+# Splash screen - state machine.  Ability to have another go
+# Pulsing next square go in both directions in terms of colour
 
 ##############################################################################
 # IMPORTS
@@ -18,11 +21,10 @@ import pygame, random, time
 from pygame.locals import *
 
 from othelloClasses import perpetualTimer,MyGameGrid
-
-theGameGrid = MyGameGrid(8,8,[0,1,2],0)
 EMPTY_SQUARE = 0
 BLACK_PIECE = 1
 WHITE_PIECE = 2
+theGameGrid = MyGameGrid(8,8,[EMPTY_SQUARE,BLACK_PIECE,WHITE_PIECE],0)
 theGameGrid.SetGridItem((3,3),WHITE_PIECE)
 theGameGrid.SetGridItem((4,3),BLACK_PIECE)
 theGameGrid.SetGridItem((4,4),WHITE_PIECE)
