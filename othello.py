@@ -6,11 +6,15 @@
 #  Sounds 
 #  https://pixabay.com/sound-effects/search/clicks/
 #
+#  Music
+#  https://pixabay.com/music/search/relaxing%20game%20music/
+#
 ##############################################################################
 
 #To do
 # Store the board before a move and then undo will be easy
 # Splash screen - state machine.  Ability to have another go
+# music on off button
 
 ##############################################################################
 # IMPORTS
@@ -71,6 +75,8 @@ p2Score = 2
 #sounds
 pygame.mixer.init()
 clickSound = pygame.mixer.Sound("./sounds/click.mp3")
+pygame.mixer.music.load("./sounds/relaxing-music.mp3") 
+pygame.mixer.music.play(-1,0.0)
 
 #fonts
 pygame.font.init() # you have to call this at the start, 
@@ -648,7 +654,6 @@ def AddPieceToGrid(col,row):
     if(IsMoveAllowed(col,row,True)):
         theGameGrid.SetGridItem((col,row), currentPiece)
         pygame.mixer.Sound.play(clickSound)
-        pygame.mixer.music.stop()
         SwapTurn()
         UpdateScores()
   
@@ -691,7 +696,9 @@ def HandleInput(running,gameOver):
     return running
 
 def UndoButtonCallback():
-    pygame.event.set_blocked(pygame.MOUSEBUTTONUP) #Turn off events so pygame does not think it is a move!
+    #Use a TKINTER message box :)
+    #Turn events off and then back on to stop pygame picking up the mouse click too!
+    pygame.event.set_blocked(pygame.MOUSEBUTTONUP) 
     answer = messagebox.askyesno("Question","Do you really want to undo the last move?")
     if(answer):
         MakeTheStartingBoard()
