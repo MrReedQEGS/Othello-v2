@@ -59,6 +59,8 @@ scoreImageName = "./images/score.jpg"
 gameOverImageName = "./images/gameOver.jpg"
 undoImageName = "./images/Undo.jpg"
 undoImageGreyName = "./images/UndoGrey.jpg"
+muteImageName = "./images/Mute.jpg"
+muteImageGreyName = "./images/MuteGrey.jpg"
 
 TOP_LEFT = (35,22)
 TOP_RIGHT = (452,22)
@@ -77,6 +79,7 @@ pygame.mixer.init()
 clickSound = pygame.mixer.Sound("./sounds/click.mp3")
 pygame.mixer.music.load("./sounds/relaxing-music.mp3") 
 pygame.mixer.music.play(-1,0.0)
+musicOn = True
 
 #fonts
 pygame.font.init() # you have to call this at the start, 
@@ -197,70 +200,19 @@ def UpdateScores():
     p1ScoreSurface = my_font.render(str(p1Score), False, (0, 0, 0))
     p2ScoreSurface = my_font.render(str(p2Score), False, (0, 0, 0))
 
-def LoadImages(running):
-    global backImage,turnIndicatorImage,scoreImage,gameOverImage,undoImage,undoGreyImage
-    try:
-        backImage = pygame.image.load(backImageName).convert()
-        if(DEBUG_ON):
-            print("\"{}\". Loaded successfully.".format(backImageName))
-    except:
-        print("When loading \"{}\". No image found!!!".format(backImageName))
-        print("Quitting PyGame  :(")
+def LoadImages():
+    global backImage,turnIndicatorImage,scoreImage,gameOverImage,undoImage,undoGreyImage,muteImage,muteGreyImage
+ 
+    backImage = pygame.image.load(backImageName).convert()
+    turnIndicatorImage = pygame.image.load(turnIndicatorImageName).convert()
+    scoreImage = pygame.image.load(scoreImageName).convert()
+    undoImage = pygame.image.load(undoImageName).convert()
+    undoGreyImage = pygame.image.load(undoImageGreyName).convert()
+    muteImage = pygame.image.load(muteImageName).convert()
+    muteGreyImage = pygame.image.load(muteImageGreyName).convert()
+    gameOverImage = pygame.image.load(gameOverImageName).convert()
 
-        running = False
-        return running
-
-    try:
-        turnIndicatorImage = pygame.image.load(turnIndicatorImageName).convert()
-        if(DEBUG_ON):
-            print("\"{}\". Loaded successfully.".format(turnIndicatorImageName))
-    except:
-        print("When loading \"{}\". No image found!!!".format(turnIndicatorImageName))
-        print("Quitting PyGame  :(")
-        running = False
-        return running
-
-    try:
-        scoreImage = pygame.image.load(scoreImageName).convert()
-        if(DEBUG_ON):
-            print("\"{}\". Loaded successfully.".format(scoreImageName))
-    except:
-        print("When loading \"{}\". No image found!!!".format(scoreImageName))
-        print("Quitting PyGame  :(")
-        running = False
-        return running
-
-    try:
-        undoImage = pygame.image.load(undoImageName).convert()
-        if(DEBUG_ON):
-            print("\"{}\". Loaded successfully.".format(undoImageName))
-    except:
-        print("When loading \"{}\". No image found!!!".format(undoImageName))
-        print("Quitting PyGame  :(")
-        running = False
-        return running
-    
-    try:
-        undoGreyImage = pygame.image.load(undoImageGreyName).convert()
-        if(DEBUG_ON):
-            print("\"{}\". Loaded successfully.".format(undoImageGreyName))
-    except:
-        print("When loading \"{}\". No image found!!!".format(undoImageGreyName))
-        print("Quitting PyGame  :(")
-        running = False
-        return running
-
-    try:
-        gameOverImage = pygame.image.load(gameOverImageName).convert()
-        if(DEBUG_ON):
-            print("\"{}\". Loaded successfully.".format(gameOverImageName))
-    except:
-        print("When loading \"{}\". No image found!!!".format(gameOverImageName))
-        print("Quitting PyGame  :(")
-        running = False
-        return running
         
-
 def SwapTurn():
     global turn,turnIndicatorYPos
     if(turn == COL_WHITE):
@@ -704,12 +656,23 @@ def UndoButtonCallback():
         MakeTheStartingBoard()
     pygame.event.set_allowed(None)
 
+def MuteButtonCallback():
+    global musicOn
+    print("Mute pressed...")
+    if(musicOn):
+        musicOn = False
+        pygame.mixer.music.pause()
+    else:
+        musicOn = True
+        pygame.mixer.music.unpause()
+            
+
 ##############################################################################
 # MAIN
 ##############################################################################
 pygame.init()
 
-LoadImages(running)
+LoadImages()
 
 gameOver = False
 
@@ -717,7 +680,8 @@ MakeTheStartingBoard()
 
 gameOverImage = pygame.transform.scale(gameOverImage, (80,80))
 
-theUndoButton = MyClickableImageButton(479,455,undoImage,undoGreyImage,surface,UndoButtonCallback)
+theUndoButton = MyClickableImageButton(426,455,undoImage,undoGreyImage,surface,UndoButtonCallback)
+theMuteButton = MyClickableImageButton(396,455,muteImage,muteGreyImage,surface,MuteButtonCallback)
 
 #game loop
 while running:
@@ -735,6 +699,7 @@ while running:
     surface.blit(p2ScoreSurface, (514,416))
 
     theUndoButton.DrawSelf()
+    theMuteButton.DrawSelf()
 
     DrawTurnMarker()
 
