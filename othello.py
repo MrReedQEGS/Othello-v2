@@ -61,6 +61,8 @@ undoImageName = "./images/Undo.jpg"
 undoImageGreyName = "./images/UndoGrey.jpg"
 muteImageName = "./images/Mute.jpg"
 muteImageGreyName = "./images/MuteGrey.jpg"
+helpImageName = "./images/Help.jpg"
+helpImageGreyName = "./images/HelpGrey.jpg"
 
 TOP_LEFT = (35,22)
 TOP_RIGHT = (452,22)
@@ -201,7 +203,8 @@ def UpdateScores():
     p2ScoreSurface = my_font.render(str(p2Score), False, (0, 0, 0))
 
 def LoadImages():
-    global backImage,turnIndicatorImage,scoreImage,gameOverImage,undoImage,undoGreyImage,muteImage,muteGreyImage
+    global backImage,turnIndicatorImage,scoreImage,undoImage,undoGreyImage,muteImage,muteGreyImage
+    global helpImage,helpGreyImage,gameOverImage
  
     backImage = pygame.image.load(backImageName).convert()
     turnIndicatorImage = pygame.image.load(turnIndicatorImageName).convert()
@@ -210,6 +213,8 @@ def LoadImages():
     undoGreyImage = pygame.image.load(undoImageGreyName).convert()
     muteImage = pygame.image.load(muteImageName).convert()
     muteGreyImage = pygame.image.load(muteImageGreyName).convert()
+    helpImage = pygame.image.load(helpImageName).convert()
+    helpGreyImage = pygame.image.load(helpImageGreyName).convert()
     gameOverImage = pygame.image.load(gameOverImageName).convert()
 
         
@@ -620,9 +625,9 @@ def HandleInput(running,gameOver):
 
         if(not gameOver):    
             #Toggle grid centre markers?
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    alwaysShowNextMoves = not alwaysShowNextMoves
+            #if event.type == pygame.KEYDOWN:
+            #    if event.key == pygame.K_SPACE:
+            #        alwaysShowNextMoves = not alwaysShowNextMoves
 
             #Detect a mouse up
             if event.type == pygame.MOUSEBUTTONUP:
@@ -658,7 +663,6 @@ def UndoButtonCallback():
 
 def MuteButtonCallback():
     global musicOn
-    print("Mute pressed...")
     if(musicOn):
         musicOn = False
         pygame.mixer.music.pause()
@@ -666,6 +670,9 @@ def MuteButtonCallback():
         musicOn = True
         pygame.mixer.music.unpause()
             
+def HelpButtonCallback():
+    global alwaysShowNextMoves
+    alwaysShowNextMoves = not alwaysShowNextMoves
 
 ##############################################################################
 # MAIN
@@ -682,6 +689,7 @@ gameOverImage = pygame.transform.scale(gameOverImage, (80,80))
 
 theUndoButton = MyClickableImageButton(426,455,undoImage,undoGreyImage,surface,UndoButtonCallback)
 theMuteButton = MyClickableImageButton(396,455,muteImage,muteGreyImage,surface,MuteButtonCallback)
+theHelpButton = MyClickableImageButton(366,455,helpImage,helpGreyImage,surface,HelpButtonCallback)
 
 #game loop
 while running:
@@ -700,6 +708,7 @@ while running:
 
     theUndoButton.DrawSelf()
     theMuteButton.DrawSelf()
+    theHelpButton.DrawSelf()
 
     DrawTurnMarker()
 
