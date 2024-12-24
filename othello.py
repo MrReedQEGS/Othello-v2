@@ -54,6 +54,7 @@ backImageName = "./images/othello blank grid.jpg"
 turnIndicatorImageName = "./images/turnIndicator.jpg"
 scoreImageName = "./images/score.jpg"
 gameOverImageName = "./images/gameOver.jpg"
+undoImageName = "./images/Undo.jpg"
 
 TOP_LEFT = (35,22)
 TOP_RIGHT = (452,22)
@@ -180,7 +181,7 @@ def UpdateScores():
     p2ScoreSurface = my_font.render(str(p2Score), False, (0, 0, 0))
 
 def LoadImages(running):
-    global backImage,turnIndicatorImage,scoreImage,gameOverImage
+    global backImage,turnIndicatorImage,scoreImage,gameOverImage,undoImage
     try:
         backImage = pygame.image.load(backImageName).convert()
         if(DEBUG_ON):
@@ -208,6 +209,16 @@ def LoadImages(running):
             print("\"{}\". Loaded successfully.".format(scoreImageName))
     except:
         print("When loading \"{}\". No image found!!!".format(scoreImageName))
+        print("Quitting PyGame  :(")
+        running = False
+        return running
+
+    try:
+        undoImage = pygame.image.load(undoImageName).convert()
+        if(DEBUG_ON):
+            print("\"{}\". Loaded successfully.".format(undoImageName))
+    except:
+        print("When loading \"{}\". No image found!!!".format(undoImageName))
         print("Quitting PyGame  :(")
         running = False
         return running
@@ -682,6 +693,8 @@ while running:
 
     surface.blit(p1ScoreSurface, (514,390))
     surface.blit(p2ScoreSurface, (514,416))
+
+    surface.blit(undoImage, (40,40))
 
     DrawTurnMarker()
 
