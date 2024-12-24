@@ -17,6 +17,19 @@
 import pygame, random, time
 from pygame.locals import *
 
+from othelloClasses import perpetualTimer,MyGameGrid
+
+theGameGrid = MyGameGrid(8,8,[0,1,2],0)
+EMPTY_SQUARE = 0
+BLACK_PIECE = 1
+WHITE_PIECE = 2
+theGameGrid.SetGridItem((3,3),WHITE_PIECE)
+theGameGrid.SetGridItem((4,3),BLACK_PIECE)
+theGameGrid.SetGridItem((4,4),WHITE_PIECE)
+theGameGrid.SetGridItem((3,4),BLACK_PIECE)
+
+theGameGrid.DebugPrintSelf()
+
 ##############################################################################
 # VARIABLES
 ##############################################################################
@@ -85,25 +98,6 @@ gameGrid = [[0,0,0,0,0,0,0,0],
             [0,0,0,0,0,0,0,0]]
 
 #Start a one second timer
-#Keeping track of game time in a separate thread
-from threading import Timer,Thread,Event
-class perpetualTimer():
-
-   def __init__(self,t,hFunction):
-      self.t=t
-      self.hFunction = hFunction
-      self.thread = Timer(self.t,self.handle_function)
-
-   def handle_function(self):
-      self.hFunction()
-      self.thread = Timer(self.t,self.handle_function)
-      self.thread.start()
-
-   def start(self):
-      self.thread.start()
-
-   def cancel(self):
-      self.thread.cancel()
 
 def OneSecondCallback():
     #Update game time
