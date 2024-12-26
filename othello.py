@@ -81,7 +81,9 @@ pygame.mixer.init()
 clickSound = pygame.mixer.Sound("./sounds/click.mp3")
 pygame.mixer.music.load("./sounds/relaxing-music.mp3") 
 pygame.mixer.music.play(-1,0.0)
-musicOn = True
+pygame.mixer.music.pause()
+
+musicOn = False
 
 #fonts
 pygame.font.init() # you have to call this at the start, 
@@ -144,6 +146,7 @@ def MakeTheStartingBoard():
     turn = COL_BLACK
     turnIndicatorYPos = 24
     theGameGrid.BlankTheGrid()
+
     theGameGrid.SetGridItem((3,3),WHITE_PIECE)
     theGameGrid.SetGridItem((4,3),BLACK_PIECE)
     theGameGrid.SetGridItem((4,4),WHITE_PIECE)
@@ -433,7 +436,10 @@ def CheckDiagonalDownLeft(currentPiece,oppositePiece,row,col,applyTheMove = True
     colNeededTo0 = col
     numOfLoops = min(rowNeedTo7,colNeededTo0)
 
-    for i in range(1,numOfLoops):
+    if(col == 7 and row == 2):
+        print("hello")
+
+    for i in range(1,numOfLoops+1):
         thisGridItem = theGameGrid.GetGridItem((col-i,row+i))
         if(thisGridItem == EMPTY_SQUARE):
             numInRun = 0  # if we get to a blank square then it cannot be run
