@@ -30,6 +30,10 @@ from tkinter import messagebox
 # VARIABLES
 ##############################################################################
 
+APP_NAME = "Othello"
+COPYRIGHT_MESSAGE = "Mark Reed (c) 2024"
+WINDOW_TEXT = APP_NAME + " - " + COPYRIGHT_MESSAGE
+
 #CREATE THE EMPTY GAME GRID OBJECT
 EMPTY_SQUARE = 0
 BLACK_PIECE = 1
@@ -44,7 +48,7 @@ SCREEN_HEIGHT = 500
 # create the display surface object
 # of specific dimension.
 surface = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
-pygame.display.set_caption('Othello - Mark Reed (c) 2024')
+pygame.display.set_caption(WINDOW_TEXT)
 
 COL_BLACK = (0,0,0)
 COL_WHITE = (255,255,255)
