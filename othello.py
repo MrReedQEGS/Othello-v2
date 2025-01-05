@@ -59,7 +59,7 @@ COL_DARK_BLUE = (35, 5, 250)
 BACK_FILL_COLOUR = COL_WHITE
 backImageName = "./images/othello blank grid.jpg"
 turnIndicatorImageName = "./images/turnIndicator.jpg"
-scoreImageName = "./images/score.jpg"
+scoreImageName = "./images/Score.jpg"
 gameOverImageName = "./images/gameOver.jpg"
 undoImageName = "./images/Undo.jpg"
 undoImageGreyName = "./images/UndoGrey.jpg"
@@ -81,11 +81,15 @@ p1Score = 2
 p2Score = 2
 
 #sounds
-pygame.mixer.init()
-clickSound = pygame.mixer.Sound("./sounds/click.mp3")
-pygame.mixer.music.load("./sounds/relaxing-music.mp3") 
-pygame.mixer.music.play(-1,0.0)
-pygame.mixer.music.pause()
+SOUNDS_ALLOWED = False
+clickSound = None
+
+if(SOUNDS_ALLOWED):
+    pygame.mixer.init()
+    clickSound = pygame.mixer.Sound("./sounds/click.mp3")
+    pygame.mixer.music.load("./sounds/relaxing-music.mp3") 
+    pygame.mixer.music.play(-1,0.0)
+    pygame.mixer.music.pause()
 
 musicOn = False
 
@@ -440,9 +444,6 @@ def CheckDiagonalDownLeft(currentPiece,oppositePiece,row,col,applyTheMove = True
     colNeededTo0 = col
     numOfLoops = min(rowNeedTo7,colNeededTo0)
 
-    if(col == 7 and row == 2):
-        print("hello")
-
     for i in range(1,numOfLoops+1):
         thisGridItem = theGameGrid.GetGridItem((col-i,row+i))
         if(thisGridItem == EMPTY_SQUARE):
@@ -620,7 +621,8 @@ def AddPieceToGrid(col,row):
     #Only allow the move if the square is not full already...
     if(IsMoveAllowed(col,row,True)):
         theGameGrid.SetGridItem((col,row), currentPiece)
-        pygame.mixer.Sound.play(clickSound)
+        if(SOUNDS_ALLOWED):
+            pygame.mixer.Sound.play(clickSound)
         SwapTurn()
         UpdateScores()
   
@@ -675,10 +677,12 @@ def MuteButtonCallback():
     global musicOn
     if(musicOn):
         musicOn = False
-        pygame.mixer.music.pause()
+        if(SOUNDS_ALLOWED):
+            pygame.mixer.music.pause()
     else:
         musicOn = True
-        pygame.mixer.music.unpause()
+        if(SOUNDS_ALLOWED):
+            pygame.mixer.music.unpause()
             
 def InfoButtonCallback():
     global alwaysShowNextMoves
