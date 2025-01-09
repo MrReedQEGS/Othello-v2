@@ -636,11 +636,7 @@ def HandleInput(running,gameOver):
             running = False
 
         if(not gameOver):    
-            #Toggle grid centre markers?
-            #if event.type == pygame.KEYDOWN:
-            #    if event.key == pygame.K_SPACE:
-            #        alwaysShowNextMoves = not alwaysShowNextMoves
-
+          
             #Detect a mouse up
             if event.type == pygame.MOUSEBUTTONUP:
 
